@@ -51,20 +51,17 @@ askQuestions()
 
                 userInfo.starCount = starData.length + " stars";
 
-                console.log(starData.length + " stars");
+                console.log(userInfo)
 
                 return userInfo
             })
     })
     .then(function (userInfo) {
-        console.log(userInfo);
+        return generateHTML(userInfo);
     })
-    // .then(function (userData) {
-    //     return generateHTML(userData);
-    // })
-    // .then(function (userData, htmlFile) {
-    //     writeFile(userData, htmlFile)
-    // })
+    .then(function (htmlFile) {
+        writeFile(htmlFile);
+    })
     .catch(function (err) {
         console.log(err);
     });
@@ -108,9 +105,7 @@ function buildQueryUrl(name) {
 
 function generateHTML(data) {
 
-    var fileName = data.name
-
-    var fileCode = `
+    var htmlFile = `
     <!DOCTYPE html>
 <html lang="en">
 
@@ -128,19 +123,20 @@ function generateHTML(data) {
 
     <!-- Profile Image and Name -->
     <div class="d-flex">
-        <div class="row" style="background-color: red;">
+        <div class="row" style="background-color: ${data.favoriteColor};">
             <div class="col-6">
-                <img class="img-fluid rounded-circle my-5" src="${data.avatar_url}"
+                <img class="img-fluid rounded-circle my-5" src="${data.profilePic}"
                     alt="">
             </div>
             <div class="col-6 text-white text-justify-right">
                 <h3>${data.name}n</h3>
                 <h5>Location: ${data.location} </h5>
-                <h5>Github: ${data.html_url}</h5>
+                <h5>Github: ${data.gitHub}</h5>
                 <ul>
-                    <li>Public Repos: ${data.public_repos}</li>
+                    <li>Public Repos: ${data.repos}</li>
                     <li>Followers: ${data.followers}</li>
                     <li>Following: ${data.following}</li>
+                    <li>Stars: ${data.starCount}</li>
                 </ul>
             </div>
         </div>
@@ -149,48 +145,20 @@ function generateHTML(data) {
 
 </html>`
 
-    console.log("html file generated for " + data.login)
-
+    console.log("html file generated for " + data.username)
 
     return htmlFile
 }
 
-function generateTextFile(data) {
-    const info = {
-        name: data.name,
-        location: data.location,
-        github: data.url,
-        profilePic: data.avatar_url,
-        repos: data.public_repos,
-        followers: data.followers,
-        following: data.following,
-    }
+function writeFile(data) {
 
-    return info
+    var fileName = "resume.html";
 
+    writeFileAsync(fileName, data)
+        .then(function () {
+            console.log("successfully written .html file!")
+        });
 }
-
-// function writeFile(data) {
-
-//     console.log(data.name);
-
-//     var fileName = data.name.toLowerCase() + ".html";
-//     // 
-//     const html = generateHTML(file);
-
-//     // const text = generateTextFile(data);
-
-//     writeFileAsync(fileName, html)
-//         .then(function () {
-//             console.log("successfully written .html file!")
-//         });
-
-// writeFileAsync(fileName, JSON.stringify(text))
-//     .then(function () {
-//         console.log("successfully wrote .txt file!")
-//     });
-
-// }
 
 function init() {
 }
