@@ -1,11 +1,10 @@
 const inquirer = require("inquirer");
-const fs = require('fs');
+const fs = require('fs-extra');
 const axios = require("axios");
 const util = require("util");
+const puppeteer = require("puppeteer");
 
-const writeFileAsync = util.promisify(fs.writeFile);
-
-const userInfo = [];
+const userInfo = {};
 
 askQuestions()
     .then(function (response) {
@@ -51,8 +50,6 @@ askQuestions()
 
                 userInfo.starCount = starData.length + " stars";
 
-                console.log(userInfo)
-
                 return userInfo
             })
     })
@@ -60,7 +57,7 @@ askQuestions()
         return generateHTML(userInfo);
     })
     .then(function (htmlFile) {
-        writeFile(htmlFile);
+        return createPdf(htmlFile);
     })
     .catch(function (err) {
         console.log(err);
@@ -150,15 +147,29 @@ function generateHTML(data) {
     return htmlFile
 }
 
-function writeFile(data) {
+async function createPdf(code) {
 
-    var fileName = "resume.html";
+    try {
 
-    writeFileAsync(fileName, data)
-        .then(function () {
-            console.log("successfully written .html file!")
+        var fileName = userInfo.username + ".pdf";
+        const browser = await puppeteer.launch();
+        const page = await browser.newPage();
+
+        await page.setContent(code);
+        await page.emulateMedia("screen");
+        await page.pdf({
+            path: fileName,
+            format: "A4",
+            printBackground: true
         });
-}
+
+        console.log("pdf made!");
+        await browser.close();
+        process.exit;
+    } catch (e) {
+        console.log("pdf error", e);
+    }
+};
 
 function init() {
 }
