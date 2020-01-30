@@ -4,6 +4,7 @@ const axios = require("axios");
 const util = require("util");
 const puppeteer = require("puppeteer");
 
+// variable containing user information retrieved from GitHub API
 const userInfo = {};
 
 askQuestions()
@@ -14,6 +15,8 @@ askQuestions()
         return buildQueryUrl(userName)
     })
     .then(function (queryUrl) {
+
+        // Make GitHub API call and append relevant data to userInfo object.
         return axios
             .get(queryUrl)
             .then(function (res) {
@@ -38,6 +41,7 @@ askQuestions()
     })
     .then(function (userInfo) {
 
+        // Make GitHub API call and append star data to userInfo object.
         const starQueryUrl = `https://api.github.com/users/${userInfo.username}/starred`;
 
         console.log(starQueryUrl);
@@ -48,7 +52,7 @@ askQuestions()
 
                 const starData = res.data;
 
-                userInfo.starCount = starData.length + " stars";
+                userInfo.starCount = starData.length;
 
                 return userInfo
             })
@@ -63,6 +67,7 @@ askQuestions()
         console.log(err);
     });
 
+// A function to ask user question in command line.
 function askQuestions() {
 
     return inquirer.prompt([
@@ -78,6 +83,7 @@ function askQuestions() {
     ]);
 }
 
+// A function to retrieve and save answers in userInfo object.
 function showAnswers(data) {
     let userName = data.github;
     let color = data.color;
@@ -91,6 +97,7 @@ function showAnswers(data) {
     return userName
 }
 
+// A function to take given user name and generate url for GitHub API call.
 function buildQueryUrl(name) {
 
     const queryUrl = `https://api.github.com/users/${name}`;
@@ -100,53 +107,67 @@ function buildQueryUrl(name) {
     return queryUrl;
 }
 
+// A function to take data from GitHub API call and add it to profile page html.
 function generateHTML(data) {
+
+    console.log(userInfo);
 
     var htmlFile = `
     <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Profile</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-        integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-
-</head>
-
-<body>
-
-    <!-- Profile Image and Name -->
-    <div class="d-flex">
-        <div class="row" style="background-color: ${data.favoriteColor};">
-            <div class="col-6">
-                <img class="img-fluid rounded-circle my-5" src="${data.profilePic}"
-                    alt="">
+    <html lang="en">
+    
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Profile</title>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    
+    </head>
+    
+    <body>
+    
+        <div class="container-fluid">
+            <div class="row" style="height: 200px; background-color: ${userInfo.favoriteColor};">
+                <div class="col-4">
+                    <img class="img-fluid border border-white rounded-circle my-5"
+                        src="${userInfo.profilePic}" alt="">
+                </div>
+                <div class="col-8 mt-5 text-white text-left">
+                    <h1 style="font-size: 60px;">${userInfo.name}</h1>
+                </div>
             </div>
-            <div class="col-6 text-white text-justify-right">
-                <h3>${data.name}n</h3>
-                <h5>Location: ${data.location} </h5>
-                <h5>Github: ${data.gitHub}</h5>
+        </div>
+    
+        <div style="margin-left: 40%;" class="container mt-5">
+    
+            <div class="row">
+                <h3 class="text-right">${userInfo.location}</h3>
+            </div>
+            <div class="row">
+                <h3>${userInfo.gitHub}</h3>
+            </div>
+            <div class="row mt-3">
                 <ul>
-                    <li>Public Repos: ${data.repos}</li>
-                    <li>Followers: ${data.followers}</li>
-                    <li>Following: ${data.following}</li>
-                    <li>Stars: ${data.starCount}</li>
+                    <li>Public Repos: ${userInfo.repos}</li>
+                    <li>Followers: ${userInfo.followers}</li>
+                    <li>Following: ${userInfo.following}</li>
+                    <li>Stars: ${userInfo.starCount}</li>
                 </ul>
             </div>
         </div>
-    </div>
-</body>
-
-</html>`
+    
+    </body>
+    
+    </html>`
 
     console.log("html file generated for " + data.username)
 
     return htmlFile
 }
 
+// A function to generate a .PDF from the generated html and save to local folder.
 async function createPdf(code) {
 
     try {
@@ -159,7 +180,8 @@ async function createPdf(code) {
         await page.emulateMedia("screen");
         await page.pdf({
             path: fileName,
-            format: "A4",
+            width: "1200 px",
+            height: "500 px",
             printBackground: true
         });
 
