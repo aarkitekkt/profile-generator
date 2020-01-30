@@ -9,13 +9,13 @@ The purpose of this command-line application is to dynamically generate a GitHub
 ## Gallery
 ​
 Prompts:
-![Prompts after application is run](screenshots/prompts.JPG "Command Line Prompts")
+![Prompts after application is run](./screengrabs/prompts.JPG "Command Line Prompts")
 
 Progress Logs:
-![Home Page View](screenshots/logs.JPG "Progress Logs")
+![Home Page View](./screengrabs/logs.JPG "Progress Logs")
 ​
 Generated Profile:
-![Profile PDF](screenshots/profile.JPG "Generated Profile")
+![Profile PDF](./screengrabs/profile.JPG "Generated Profile")
 
 
 ​
