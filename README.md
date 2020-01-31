@@ -8,6 +8,9 @@ The purpose of this command-line application is to dynamically generate a GitHub
 ​
 ## Gallery
 ​
+Working Application:
+![Prompts after application is run](./screengrabs/pdfProfileCreator.gif "Command Line Prompts")
+
 Prompts:
 ![Prompts after application is run](./screengrabs/prompts.JPG "Command Line Prompts")
 
